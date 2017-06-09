@@ -2,6 +2,9 @@ from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from .models import Post
 from .forms import PostForm
+from django.http import JsonResponse
+from django.core import serializers
+
 
 def post_list(request):
     posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
@@ -34,6 +37,13 @@ def post_edit(request, pk):
     else:
         form = PostForm(instance=post)
     return render(request, 'blog/post_edit.html', {'form': form})
+def json_all_posts(request):
+    posts = Post.objects.order_by('published_date')
+    data = serializers.serialize('json', posts)
+    return JsonResponse(data, safe=False)
+def spa_post_list(request):
+    return render(request, 'blog/spa_post_list.html', {})
+
 
 # Create your views here.
 
